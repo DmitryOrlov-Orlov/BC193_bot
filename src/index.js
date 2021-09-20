@@ -43,13 +43,19 @@ bot.on('callback_query', query => {
 })
 
 bot.on('message', msg => {
+  console.log(msg.from.first_name);
+  console.log(msg.from.id);
+  if (msg.text === '/start') {
+    return false;
+  }
+
   if (flagDirector) {
     bot.sendMessage(config.DIRECTOR, msg.text);
     bot.sendMessage(msg.chat.id, 'Отлично, Ваше обращение отправлено директору.');
     flagDirector = false;
   }
   else if (flagSecretary) {
-    bot.sendMessage(config.RUS, msg.text);
+    bot.sendMessage(config.SECRETARY, msg.text);
     bot.sendMessage(msg.chat.id, 'Отлично, Ваше обращение отправлено секретарю.');
     flagSecretary = false;
   }
