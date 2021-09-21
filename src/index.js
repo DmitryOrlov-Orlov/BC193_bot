@@ -11,18 +11,22 @@ const bot = new TelegramBot(config.TOKEN, {
 const inline_keyboard = [
   [
     {
-      text: 'Заявка, Секретарю',
+      text: 'Заявка Секретарю',
       callback_data: 'Secretary'
     },
     {
-      text: 'Заявка, Директору',
+      text: 'Заявка Директору',
       callback_data: 'Director'
     }
   ]
 ]
 
+const messagePrivetstvie = 'Привет, кому Вы хотите отправить заявку?';
+const messageObratnSvajz = 'Теперь напишите и отправьте свое обращение (для обратной связи не забудьте указать номер офиса, ФИО и контактный номер телефона).';
+
 bot.onText(/\/start/, msg => {
-  bot.sendMessage(msg.chat.id, 'Привет, кому Вы хотите отправить заявку?', {
+  console.log('команда start');
+  bot.sendMessage(msg.chat.id, messagePrivetstvie, {
     reply_markup: {
       inline_keyboard
     }
@@ -37,31 +41,28 @@ bot.on('callback_query', query => {
   flagDirector = true ? query.data === 'Director' : false;
   flagSecretary = true ? query.data === 'Secretary' : false;
   if (flagDirector || flagSecretary) {
-    bot.sendMessage(query.message.chat.id, "Ок, теперь напишите и отправьте свое обращение. (Для обратной связи не забудьте указать своё ФИО и номер телефона)");
+    bot.sendMessage(query.message.chat.id, messageObratnSvajz);
   }
-  console.log(debug(query));
 })
 
 bot.on('message', msg => {
-  console.log(msg.from.first_name);
-  console.log(msg.from.id);
   if (msg.text === '/start') {
     return false;
   }
 
   if (flagDirector) {
-    bot.sendMessage(config.DIRECTOR, msg.text);
+    bot.sendMessage(config.DIRECTOR, `#заявка\nВам прислал(а) сообщение - "${msg.from.first_name}" (имя взято из настроек пользователя). \n\n***\n${msg.text}\n***`);
     bot.sendMessage(msg.chat.id, 'Отлично, Ваше обращение отправлено директору.');
     flagDirector = false;
   }
   else if (flagSecretary) {
-    bot.sendMessage(config.SECRETARY, msg.text);
+    bot.sendMessage(config.SECRETARY, `#заявка\nВам прислал(а) сообщение - "${msg.from.first_name}" (имя взято из настроек пользователя). \n\n***\n${msg.text}\n***`);
     bot.sendMessage(msg.chat.id, 'Отлично, Ваше обращение отправлено секретарю.');
     flagSecretary = false;
   }
   else {
     const randomMessage = () => {
-      bot.sendMessage(msg.chat.id, 'Привет, кому Вы хотите отправить заявку? (Для обратной связи не забудьте указать своё ФИО и номер телефона) (если в тупую присылают сообщения)', {
+      bot.sendMessage(msg.chat.id, messagePrivetstvie, {
         reply_markup: {
           inline_keyboard
         }
