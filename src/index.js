@@ -21,20 +21,21 @@ const inline_keyboard = [
   ]
 ]
 
-const messagePrivetstvie = 'Привет, кому Вы хотите отправить заявку?';
+const messagePrivetstvie = 'Добрый день! Кому Вы хотите отправить заявку?';
 const messageObratnSvajz = 'Теперь напишите и отправьте свое обращение (для обратной связи не забудьте указать номер офиса, ФИО и контактный номер телефона).';
+let flagDirector = false;
+let flagSecretary = false;
 
 bot.onText(/\/start/, msg => {
   console.log('команда start');
+  flagDirector = false;
+  flagSecretary = false;
   bot.sendMessage(msg.chat.id, messagePrivetstvie, {
     reply_markup: {
       inline_keyboard
     }
   });
 })
-
-let flagDirector = false;
-let flagSecretary = false;
 
 bot.on('callback_query', query => {
   //bot.sendMessage(query.message.chat.id, query.data);
